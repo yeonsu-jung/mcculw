@@ -149,6 +149,8 @@ def run_example():
         if use_device_detection:
             ul.release_daq_device(board_num)
 
+    
+
 
 if __name__ == '__main__':
     run_example()
