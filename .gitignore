@@ -102,3 +102,5 @@ ENV/
 
 # Build files
 mcculw-*/
+scan_data.csv
+*.csv
