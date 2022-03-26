@@ -123,6 +123,7 @@ def run_example():
 
         # Print the data
         data_index = 0
+        data_all = []
         for index in range(points_per_channel):
             display_data = [index]
             for _ in range(num_chans):
@@ -140,6 +141,27 @@ def run_example():
                 display_data.append('{:.3f}'.format(eng_value))
             # Print this row
             print(row_format.format(*display_data))
+            data_all.append(row_format.format(*display_data))
+
+        # Write a file
+        file_name = 'test.csv'
+
+        with open(file_name, 'w') as f:
+            print('Writing data to ' + file_name, end='')
+
+            # Write a header to the file
+            for chan_num in range(low_chan, high_chan + 1):
+                f.write('Channel ' + str(chan_num) + ',')
+            f.write(u'\n')
+
+            for index in range(points_per_channel):
+                display_data = [index]
+                for k in range(num_chans):
+                    f.write('%s'%data_all[k])
+                    f.write(u'\n')
+
+
+        
     except Exception as e:
         print('\n', e)
     finally:
@@ -148,8 +170,6 @@ def run_example():
             ul.win_buf_free(memhandle)
         if use_device_detection:
             ul.release_daq_device(board_num)
-
-    
 
 
 if __name__ == '__main__':
