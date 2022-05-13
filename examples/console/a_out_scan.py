@@ -63,7 +63,7 @@ def run_example():
         ao_info = daq_dev_info.get_ao_info()
 
         low_chan = 0
-        high_chan = min(3, ao_info.num_chans - 1)
+        high_chan = 0 #min(3, ao_info.num_chans - 1)
         num_chans = high_chan - low_chan + 1
 
         rate = 100
@@ -146,7 +146,6 @@ def add_example_data(board_num, data_array, ao_range, num_chans, rate,
             data_index += 1
 
     return frequencies
-
 
 if __name__ == '__main__':
     run_example()

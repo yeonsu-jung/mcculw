@@ -1,3 +1,4 @@
+# %%
 """
 File:                       a_in_scan_foreground.py
 
@@ -32,6 +33,8 @@ try:
 except ImportError:
     from .console_examples_util import config_first_detected_device
 
+from matplotlib import pyplot as plt
+import numpy as np
 
 def run_example():
     # By default, the example detects and displays all available devices and
@@ -42,8 +45,8 @@ def run_example():
     use_device_detection = True
     dev_id_list = []
     board_num = 0
-    rate = 100
-    points_per_channel = 10
+    rate = 20000
+    points_per_channel = 1000
     memhandle = None
 
     try:
@@ -61,7 +64,8 @@ def run_example():
         ai_info = daq_dev_info.get_ai_info()
 
         low_chan = 0
-        high_chan = min(3, ai_info.num_chans - 1)
+        # high_chan = min(3, ai_info.num_chans - 1)
+        high_chan = 1
         num_chans = high_chan - low_chan + 1
 
         total_count = points_per_channel * num_chans
@@ -123,27 +127,59 @@ def run_example():
 
         # Print the data
         data_index = 0
-        data_all = []
-        for index in range(points_per_channel):
-            display_data = [index]
-            for _ in range(num_chans):
-                if ScanOptions.SCALEDATA in scan_options:
-                    # If the SCALEDATA ScanOption was used, the values
-                    # in the array are already in engineering units.
-                    eng_value = ctypes_array[data_index]
-                else:
-                    # If the SCALEDATA ScanOption was NOT used, the
-                    # values in the array must be converted to
-                    # engineering units using ul.to_eng_units().
+        data_all = []        
+        data_all_num = np.zeros((points_per_channel,2))
+
+        # for index in range(points_per_channel):
+        #     display_data = [index]
+        #     for _ in range(num_chans):
+        #         if ScanOptions.SCALEDATA in scan_options:
+        #             # If the SCALEDATA ScanOption was used, the values
+        #             # in the array are already in engineering units.
+        #             eng_value = ctypes_array[data_index]
+        #         else:
+        #             # If the SCALEDATA ScanOption was NOT used, the
+        #             # values in the array must be converted to
+        #             # engineering units using ul.to_eng_units().
+        #             eng_value = ul.to_eng_units(
+        #                 board_num, ai_range, ctypes_array[data_index])
+        #         data_index += 1
+        #         display_data.append('{:.3f}'.format(eng_value))
+        #     # Print this row
+        #     print(row_format.format(*display_data))
+        #     data_all.append(row_format.format(*display_data))
+
+        # creating subplot and figure
+        # fig = plt.figure()
+        fig, axs = plt.subplots(2)        
+
+        iter = 0
+        import time
+        while iter < 500:
+            ul.a_in_scan(
+            board_num, low_chan, high_chan, total_count,
+            rate, ai_range, memhandle, scan_options)
+
+            for index in range(points_per_channel):
+                for data_index in range(num_chans):
                     eng_value = ul.to_eng_units(
                         board_num, ai_range, ctypes_array[data_index])
-                data_index += 1
-                display_data.append('{:.3f}'.format(eng_value))
-            # Print this row
-            print(row_format.format(*display_data))
-            data_all.append(row_format.format(*display_data))
+
+                    data_all_num[index][data_index] = eng_value
+                        
+            axs[0].scatter(iter,np.mean(data_all_num[:,0]),c='b')
+            axs[1].scatter(iter,np.mean(data_all_num[:,1]),c='r')
+            # plt.show()
+            plt.pause(0.001)
+
+            iter = iter + 1
+
 
         # Write a file
+        # type(ctypes_array)
+        # eng_value = ul.to_eng_units(board_num, ai_range, ctypes_array[0:10])
+        # print(eng_value)
+
         file_name = 'test.csv'
 
         with open(file_name, 'w') as f:
@@ -159,8 +195,6 @@ def run_example():
                 for k in range(num_chans):
                     f.write('%s'%data_all[k])
                     f.write(u'\n')
-
-
         
     except Exception as e:
         print('\n', e)
@@ -174,3 +208,5 @@ def run_example():
 
 if __name__ == '__main__':
     run_example()
+
+# %%

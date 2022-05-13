@@ -106,16 +106,16 @@ class data_analyzer:
 
     
 # %%
-exp_id_30mm = ['09-58','10-08','10-13','10-32','10-25','10-19','10-28']
-exp_id_45mm = ['11-34','12-27','11-45','12-40','12-08','11-51','12-43']
-exp_id_60mm = ['10-38','10-47','10-52','11-08','10-58','11-03','11-12']
-exp_id_90mm = ['12-46','13-16','12-55','13-42','13-33','13-00','13-45']
+exp_id_30mm = ['21-34','21-39','21-55','21-59']
+exp_id_45mm = ['22-10','22-16','22-22','22-26']
+exp_id_60mm = ['16-17','16-32','16-45','16-50']
+exp_id_90mm = ['22-36','22-41','22-46','22-51']
 
 paths_30mm = []
 paths_45mm = []
 paths_60mm = []
 paths_90mm = []
-for i in range(7):
+for i in range(3):
     paths_30mm.append(f'examples/console/LoadCellLog_2022-04-01_{exp_id_30mm[i]}.csv')
     paths_45mm.append(f'examples/console/LoadCellLog_2022-04-01_{exp_id_45mm[i]}.csv')
     paths_60mm.append(f'examples/console/LoadCellLog_2022-04-01_{exp_id_60mm[i]}.csv')

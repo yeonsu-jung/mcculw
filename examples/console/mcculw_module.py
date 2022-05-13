@@ -51,7 +51,7 @@ class Timer(object):
             print('[%s]' % self.name,)
         print('Elapsed: %s' % (time.time() - self.tstart))
 
-def scan_and_average(rate = 20000, points_per_channel = 1000, chunk_size = 100,offset=(0.,0.)):
+def scan_and_average(rate = 20000, points_per_channel = 1000, num_chunks = 100,offset=(0.,0.)):
     # By default, the example detects and displays all available devices and
     # selects the first device listed. Use the dev_id_list variable to filter
     # detected devices by device ID (see UL documentation for device IDs).
@@ -116,11 +116,11 @@ def scan_and_average(rate = 20000, points_per_channel = 1000, chunk_size = 100,o
         data_index = 0
         data_all = []        
         data_all_num = np.zeros((points_per_channel,2))
-        averaged_data = np.zeros((chunk_size,num_chans))
+        averaged_data = np.zeros((num_chunks,num_chans))
         iter = 0
         
         with Timer('Scan'):
-            while iter < chunk_size:                     
+            while iter < num_chunks:                     
                 ul.a_in_scan(
                 board_num, low_chan, high_chan, total_count,
                 rate, ai_range, memhandle, scan_options)
@@ -142,10 +142,12 @@ def scan_and_average(rate = 20000, points_per_channel = 1000, chunk_size = 100,o
         np.savetxt(file_name, averaged_data, delimiter=",",fmt='%.8f')
         print(f'Data saved in {file_name}')
 
-        fig, axs = plt.subplots(2)        
-        axs[0].plot(np.mean(data_all_num[:,0],axis=0))
-        axs[1].plot(np.mean(data_all_num[:,1],axis=0))
+        fig, axs = plt.subplots(2)
+        axs[0].plot(averaged_data[:,0])
+        axs[1].plot(averaged_data[:,1])
         plt.show()
+
+        print(np.mean(averaged_data,axis=0))
         # with open(file_name, 'w') as f:
         #     print('Writing data to ' + file_name, end='')            
         
