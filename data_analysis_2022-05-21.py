@@ -136,8 +136,9 @@ diameter_list = data_table['Diameter'].drop_duplicates().to_numpy()
 speed_list = data_table['Speed'].drop_duplicates().to_numpy()
 thickness_list = data_table['Speed'].drop_duplicates().to_numpy()
 time_list = data_table['Time'].drop_duplicates().to_numpy()
+dir_list = data_table['Direction'].drop_duplicates().tolist()
 
-print(time_list)
+print(dir_list)
 # %%
 exp_date = '2022-05-16'
 data_path = []
@@ -145,15 +146,28 @@ for t in time_list:
     data_path.append(f'examples/console/LoadCellLog_{exp_date}_{t}.csv')
 
 # %%
-test = np.loadtxt(data_path[1],delimiter=',')
+exp_no = 2
+
+data_table['Direction'][exp_no]
+test = np.loadtxt(data_path[exp_no],delimiter=',')
 t_points = np.arange(0,test.shape[0]*time_step,time_step)
 
+direction = data_table['Direction'][exp_no]
+
+if direction == 'Push':
+    dir_sign = 1
+elif direction == 'Pull':
+    dir_sign = -1
+
+print(dir_sign)
 # %%
 fig, ax = plt.subplots(2)
 
-ax[0].plot(t_points,(offset_T - test[:,0])/0.0785)
-ax[1].plot(t_points,(offset_N - test[:,1])/0.0109)
+ax[0].plot(t_points,dir_sign*(offset_T - test[:,0])/0.0785)
+ax[1].plot(t_points,-(offset_N - test[:,1])/0.0109)
 
+fig.text(0.5, 0.04, 'Time (s)', ha='center')
+fig.text(0.04, 0.5, 'Force (gf)', va='center', rotation='vertical')
 # %%
 
 
