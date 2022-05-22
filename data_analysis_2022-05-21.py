@@ -1,6 +1,8 @@
 # %%
 import numpy as np
 from matplotlib import pyplot as plt
+import pandas as pd
+from pathlib import Path
 # %%
 class data_analyzer:
     def __init__(self,paths):
@@ -101,7 +103,8 @@ class data_analyzer:
        
     
 # %%
-exp_id_30mm = ['21-55','21-59','21-34','21-39']
+exp_date = '2022-05-16'
+exp_id_30mm = ['19-04','19-40','21-34','21-39']
 exp_id_45mm = ['22-22','22-26','22-10','22-16']
 exp_id_60mm = ['16-32','16-37','16-45','16-50']
 exp_id_90mm = ['22-36','22-41','22-46','22-51']
@@ -111,10 +114,48 @@ paths_45mm = []
 paths_60mm = []
 paths_90mm = []
 for i in range(4):
-    paths_30mm.append(f'examples/console/LoadCellLog_2022-05-12_{exp_id_30mm[i]}.csv')
-    paths_45mm.append(f'examples/console/LoadCellLog_2022-05-12_{exp_id_45mm[i]}.csv')
-    paths_60mm.append(f'examples/console/LoadCellLog_2022-05-12_{exp_id_60mm[i]}.csv')
-    paths_90mm.append(f'examples/console/LoadCellLog_2022-05-12_{exp_id_90mm[i]}.csv')
+    paths_30mm.append(f'examples/console/LoadCellLog_{exp_date}_{exp_id_30mm[i]}.csv')
+    paths_45mm.append(f'examples/console/LoadCellLog_{exp_date}_{exp_id_45mm[i]}.csv')
+    paths_60mm.append(f'examples/console/LoadCellLog_{exp_date}_{exp_id_60mm[i]}.csv')
+    paths_90mm.append(f'examples/console/LoadCellLog_{exp_date}_{exp_id_90mm[i]}.csv')
+# %%
+note_path = Path('C:/Users/yjung/Dropbox (Harvard University)/Stick-slip/Experiment-data/ExpNote.xlsx')
+
+# %%
+config = pd.read_excel(note_path, sheet_name=exp_date,nrows=1)
+time_step = config['TimeStep'][0]
+offset_N = config['N-offset'][0]
+offset_T = config['T-offset'][0]
+
+# %%
+data_table = pd.read_excel(note_path, skiprows = 9,sheet_name=exp_date)
+data_table = data_table.dropna()
+print(data_table)
+# %%
+diameter_list = data_table['Diameter'].drop_duplicates().to_numpy()
+speed_list = data_table['Speed'].drop_duplicates().to_numpy()
+thickness_list = data_table['Speed'].drop_duplicates().to_numpy()
+time_list = data_table['Time'].drop_duplicates().to_numpy()
+
+print(time_list)
+# %%
+exp_date = '2022-05-16'
+data_path = []
+for t in time_list:
+    data_path.append(f'examples/console/LoadCellLog_{exp_date}_{t}.csv')
+
+# %%
+test = np.loadtxt(data_path[1],delimiter=',')
+t_points = np.arange(0,test.shape[0]*time_step,time_step)
+
+# %%
+fig, ax = plt.subplots(2)
+
+ax[0].plot(t_points,(offset_T - test[:,0])/0.0785)
+ax[1].plot(t_points,(offset_N - test[:,1])/0.0109)
+
+# %%
+
 
 # %%
 da30 = data_analyzer(paths_30mm)
