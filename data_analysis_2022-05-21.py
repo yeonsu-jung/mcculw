@@ -122,6 +122,11 @@ for i in range(4):
 note_path = Path('C:/Users/yjung/Dropbox (Harvard University)/Stick-slip/Experiment-data/ExpNote.xlsx')
 
 # %%
+exp_date = '2022-05-16'
+
+note_path = Path('/Users/yeonsu/Dropbox (Harvard University)/Stick-slip/Experiment-data/ExpNote.xlsx')
+data_folder_path = Path('/Users/yeonsu/Dropbox (Harvard University)/Stick-slip/Experiment-data')
+# %%
 config = pd.read_excel(note_path, sheet_name=exp_date,nrows=1)
 time_step = config['TimeStep'][0]
 offset_N = config['N-offset'][0]
@@ -142,8 +147,10 @@ print(time_list)
 exp_date = '2022-05-16'
 data_path = []
 for t in time_list:
-    data_path.append(f'examples/console/LoadCellLog_{exp_date}_{t}.csv')
-
+    # data_path.append(f'examples/console/LoadCellLog_{exp_date}_{t}.csv')    
+    data_path.append(data_folder_path.joinpath(f'{exp_date}/LoadCellLog_{exp_date}_{t}.csv'))
+# %%
+data_path[0]
 # %%
 test = np.loadtxt(data_path[1],delimiter=',')
 t_points = np.arange(0,test.shape[0]*time_step,time_step)
