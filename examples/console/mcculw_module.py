@@ -73,6 +73,7 @@ def scan_and_average(rate = 20000, points_per_channel = 1000, num_chunks = 100,o
               daq_dev_info.unique_id, ')\n', sep='')
         ai_info = daq_dev_info.get_ai_info()
 
+
         low_chan = 0
         high_chan = 1
         num_chans = high_chan - low_chan + 1
@@ -138,8 +139,17 @@ def scan_and_average(rate = 20000, points_per_channel = 1000, num_chunks = 100,o
         # print(np.mean(averaged_data,axis=0))
         now = datetime.now()
         date_time = now.strftime("%Y-%m-%d_%H-%M")        
-        file_name = f"LoadCellLog_{date_time}.csv."                
-        np.savetxt(file_name, averaged_data, delimiter=",",fmt='%.8f')
+        exp_date = now.strftime("%Y-%m-%d")
+        folder_name = f"C:/Users/yjung/Dropbox (Harvard University)/Stick-slip/Experiment-data/{exp_date}"        
+
+        file_name = f"{folder_name}/LoadCellLog_{date_time}.csv."
+        try:
+            np.savetxt(file_name, averaged_data, delimiter=",",fmt='%.8f')
+        except:
+            import os
+            os.mkdir(folder_name)
+            np.savetxt(file_name, averaged_data, delimiter=",",fmt='%.8f')
+
         print(f'Data saved in {file_name}')
 
         fig, axs = plt.subplots(2)
@@ -161,6 +171,53 @@ def scan_and_average(rate = 20000, points_per_channel = 1000, num_chunks = 100,o
             ul.release_daq_device(board_num)
 # %%
 def set_speed(speed = 0.1):
+    # By default, the example detects all available devices and selects the
+    # first device listed.
+    # If use_device_detection is set to False, the board_num property needs
+    # to match the desired board number configured with Instacal.
+    use_device_detection = True
+    dev_id_list = []
+    board_num = 0    
+    memhandle = None
+
+    try:
+        if use_device_detection:
+            config_first_detected_device(board_num, dev_id_list)
+
+        device_info = DaqDeviceInfo(board_num)
+
+        if not device_info.supports_analog_output:
+            raise Exception('Error: The DAQ device does not support '
+                            'analog output')
+
+        print('\nActive DAQ device: ', device_info.product_name, ' (',
+              device_info.unique_id, ')\n', sep='')        
+        
+        ao_info = device_info.get_ao_info()
+
+        low_chan = 0        
+        high_chan = 0
+        # num_chans = high_chan - low_chan + 1
+        ao_range = ao_info.supported_ranges[0]        
+
+        channel = low_chan
+        ao_range = ao_info.supported_ranges[0]
+        
+        T = 1000/speed # microseconds
+        data_value = 4*(T-12000)/(400-12000) # volts    
+        
+        raw_value = ul.from_eng_units(board_num, ao_range, data_value)
+       
+
+        try:
+            ul.a_out(board_num, channel, ao_range, raw_value)
+        except Exception as e:
+            print('\n', e)
+        
+    except Exception as e:
+        print('\n', e)      
+
+def fast_carry():
     # By default, the example detects all available devices and selects the
     # first device listed.
     # If use_device_detection is set to False, the board_num property needs
