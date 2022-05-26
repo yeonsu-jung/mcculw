@@ -100,30 +100,14 @@ class data_analyzer:
         # axs[0].set_ylim((0, 0.35))
         # axs[1].set_ylim((0, 0.35))
         fig.legend()
-       
     
 # %%
 exp_date = '2022-05-16'
-exp_id_30mm = ['19-04','19-40','21-34','21-39']
-exp_id_45mm = ['22-22','22-26','22-10','22-16']
-exp_id_60mm = ['16-32','16-37','16-45','16-50']
-exp_id_90mm = ['22-36','22-41','22-46','22-51']
 
-paths_30mm = []
-paths_45mm = []
-paths_60mm = []
-paths_90mm = []
-for i in range(4):
-    paths_30mm.append(f'examples/console/LoadCellLog_{exp_date}_{exp_id_30mm[i]}.csv')
-    paths_45mm.append(f'examples/console/LoadCellLog_{exp_date}_{exp_id_45mm[i]}.csv')
-    paths_60mm.append(f'examples/console/LoadCellLog_{exp_date}_{exp_id_60mm[i]}.csv')
-    paths_90mm.append(f'examples/console/LoadCellLog_{exp_date}_{exp_id_90mm[i]}.csv')
-# %%
+# %% Windows path
 note_path = Path('C:/Users/yjung/Dropbox (Harvard University)/Stick-slip/Experiment-data/ExpNote.xlsx')
 
-# %%
-exp_date = '2022-05-16'
-
+# %% OSX Path
 note_path = Path('/Users/yeonsu/Dropbox (Harvard University)/Stick-slip/Experiment-data/ExpNote.xlsx')
 data_folder_path = Path('/Users/yeonsu/Dropbox (Harvard University)/Stick-slip/Experiment-data')
 # %%
@@ -153,13 +137,13 @@ for t in time_list:
 # %%
 data_path[0]
 # %%
-exp_no = 2
+exp_no = 6
 
-data_table['Direction'][exp_no]
+# data_table['Direction'][exp_no]
 test = np.loadtxt(data_path[exp_no],delimiter=',')
 t_points = np.arange(0,test.shape[0]*time_step,time_step)
 
-direction = data_table['Direction'][exp_no]
+direction = data_table['Direction'].tolist()[exp_no]
 
 if direction == 'Push':
     dir_sign = 1
@@ -167,15 +151,66 @@ elif direction == 'Pull':
     dir_sign = -1
 
 print(dir_sign)
+
 # %%
-fig, ax = plt.subplots(2)
+fig, ax = plt.subplots(2,figsize=(20,5))
 
 ax[0].plot(t_points,dir_sign*(offset_T - test[:,0])/0.0785)
-ax[1].plot(t_points,-(offset_N - test[:,1])/0.0109)
+ax[1].plot(t_points,-(test[:,1] - offset_N)/0.0109)
 
 fig.text(0.5, 0.04, 'Time (s)', ha='center')
 fig.text(0.04, 0.5, 'Force (gf)', va='center', rotation='vertical')
 # %%
+friction = dir_sign*(offset_T - test[:,0])/0.0785
+friction.shape
+# frequency
+# energy release
+# %%
+friction_conversion = 0.0785
+normal_conversion = 0.0109
+
+DiaQuery = 90.0
+DirQuery = 'Pull'
+exp_no_list = np.array(data_table[(data_table['Diameter'] == DiaQuery) & (data_table['Direction'] == DirQuery)].index)
+# data_table[(data_table['Diameter'] == DiaQuery) & (data_table['Direction'] == DirQuery)].index
+
+num_repeat = len(exp_no_list)
+fig, ax = plt.subplots(num_repeat*2,figsize=(20,5*num_repeat))
+
+for i,exp_no in enumerate(exp_no_list):
+    t = data_table['Time'][exp_no]
+    data_path = data_folder_path.joinpath(f'{exp_date}/LoadCellLog_{exp_date}_{t}.csv')
+
+    data_in = np.loadtxt(data_path,delimiter=',')
+    t_points = np.arange(0,data_in.shape[0]*time_step,time_step)
+
+    direction = data_table['Direction'][exp_no]
+
+    if direction == 'Push':
+        dir_sign = 1
+    elif direction == 'Pull':
+        dir_sign = -1
+
+    friction_data = dir_sign*(offset_T - data_in[:,0])/friction_conversion
+    normal_data = -(data_in[:,1] - offset_N)/normal_conversion
+
+    ax[i].plot(t_points,friction_data)
+    ax[i+num_repeat].plot(t_points,normal_data)    
+
+fig.text(0.5, 0.04, 'Time (s)', ha='center')
+fig.text(0.04, 0.5, 'Force (gf)', va='center', rotation='vertical')
+
+    
+
+# %%
+fig, ax = plt.subplots(2,figsize=(20,5))
+
+ax[0].plot(t_points,dir_sign*(offset_T - test[:,0])/0.0785)
+ax[1].plot(t_points,-(test[:,1] - offset_N)/0.0109)
+
+fig.text(0.5, 0.04, 'Time (s)', ha='center')
+fig.text(0.04, 0.5, 'Force (gf)', va='center', rotation='vertical')
+
 
 
 # %%
