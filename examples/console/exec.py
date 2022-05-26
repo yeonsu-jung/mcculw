@@ -4,9 +4,12 @@ import winsound
 frequency = 2500  # Set Frequency To 2500 Hertz
 duration = 1000  # Set Duration To 1000 ms == 1 second
 # %%
-set_speed(speed = 1) # mm/s
-# %% zeroing (with 0.1 mm/s - should change speed?)
-set_speed(speed = 0.1) # mm/s
+set_speed(speed = 0.3) # mm/s
+scan_and_average(rate=20000, points_per_channel=5000, num_chunks=1,offset=(0,0))
+# %%
+set_speed(speed = 0.3) # mm/s
+# %% zeroing (should change speed?)
+set_speed(speed = 0.3) # mm/s
 scan_and_average(rate=20000, points_per_channel=5000, num_chunks=100,offset=(0,0))
 winsound.Beep(frequency, duration)
 
@@ -16,8 +19,8 @@ set_speed(speed = 0.1) # mm/s
 scan_and_average(rate=20000, points_per_channel=5000, num_chunks=3000,offset=(0,0))
 winsound.Beep(frequency, duration)
 # %%
-set_speed(speed = 0.3) # mm/s
-scan_and_average(rate=20000, points_per_channel=5000, num_chunks=1000,offset=(0,0))
+set_speed(speed = 0.3) # mm/s 
+scan_and_average(rate=20000, points_per_channel=5000, num_chunks=2000,offset=(0,0))
 winsound.Beep(frequency, duration)
 
 # %%
