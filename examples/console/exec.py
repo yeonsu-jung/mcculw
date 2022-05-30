@@ -18,7 +18,7 @@ winsound.Beep(frequency, duration)
 set_speed(speed = 0.1) # mm/s
 scan_and_average(rate=20000, points_per_channel=5000, num_chunks=3000,offset=(0,0))
 winsound.Beep(frequency, duration)
-# %%
+# %% RUN 0.3
 set_speed(speed = 0.3) # mm/s 
 scan_and_average(rate=20000, points_per_channel=5000, num_chunks=2000,offset=(0,0))
 winsound.Beep(frequency, duration)

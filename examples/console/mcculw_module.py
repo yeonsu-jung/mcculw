@@ -160,7 +160,6 @@ def scan_and_average(rate = 20000, points_per_channel = 1000, num_chunks = 100,o
         fig, axs = plt.subplots(2)
         axs[0].plot(averaged_data[:,0])
         axs[1].plot(averaged_data[:,1])
-        plt.show()
         plt.savefig(f"{folder_name}/LoadCellLog_{date_time}.png")
 
         print(np.mean(averaged_data,axis=0))
