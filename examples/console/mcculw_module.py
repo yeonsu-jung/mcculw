@@ -61,6 +61,10 @@ def scan_and_average(rate = 20000, points_per_channel = 1000, num_chunks = 100,o
     dev_id_list = []
     board_num = 0    
     memhandle = None
+    now = datetime.now()
+    exp_date = now.strftime("%Y-%m-%d")
+    exp_time = now.strftime("%H-%M")
+    print(f'Experiment date: {exp_time}')
 
     try:
         if use_device_detection:
@@ -137,12 +141,11 @@ def scan_and_average(rate = 20000, points_per_channel = 1000, num_chunks = 100,o
                 iter = iter + 1
 
         # print(np.mean(averaged_data,axis=0))
-        now = datetime.now()
-        date_time = now.strftime("%Y-%m-%d_%H-%M")        
-        exp_date = now.strftime("%Y-%m-%d")
+        
+        date_time = now.strftime("%Y-%m-%d_%H-%M")                
         folder_name = f"C:/Users/yjung/Dropbox (Harvard University)/Stick-slip/Experiment-data/{exp_date}"        
 
-        file_name = f"{folder_name}/LoadCellLog_{date_time}.csv."
+        file_name = f"{folder_name}/LoadCellLog_{date_time}.csv"
         try:
             np.savetxt(file_name, averaged_data, delimiter=",",fmt='%.8f')
         except:
@@ -156,6 +159,7 @@ def scan_and_average(rate = 20000, points_per_channel = 1000, num_chunks = 100,o
         axs[0].plot(averaged_data[:,0])
         axs[1].plot(averaged_data[:,1])
         plt.show()
+        plt.savefig(f"{folder_name}/LoadCellLog_{date_time}.png")
 
         print(np.mean(averaged_data,axis=0))
         # with open(file_name, 'w') as f:
