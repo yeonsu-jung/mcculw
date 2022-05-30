@@ -32,7 +32,7 @@ winsound.Beep(frequency, duration)
 winsound.Beep(frequency, duration)
 
 # %%
-set_speed(speed = 1) # mm/s
+set_speed(speed = 0.3) # mm/s
 
 # %%
 # set_speed(speed = 0.1) # mm/s
