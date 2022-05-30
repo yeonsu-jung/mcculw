@@ -62,9 +62,11 @@ def scan_and_average(rate = 20000, points_per_channel = 1000, num_chunks = 100,o
     board_num = 0    
     memhandle = None
     now = datetime.now()
+    
+    # exp_time = now.strftime("%H-%M")
     exp_date = now.strftime("%Y-%m-%d")
-    exp_time = now.strftime("%H-%M")
-    print(f'Experiment date: {exp_time}')
+    date_time = now.strftime("%Y-%m-%d_%H-%M")                
+    print(f'Experiment date: {date_time}')
 
     try:
         if use_device_detection:
@@ -142,7 +144,7 @@ def scan_and_average(rate = 20000, points_per_channel = 1000, num_chunks = 100,o
 
         # print(np.mean(averaged_data,axis=0))
         
-        date_time = now.strftime("%Y-%m-%d_%H-%M")                
+        
         folder_name = f"C:/Users/yjung/Dropbox (Harvard University)/Stick-slip/Experiment-data/{exp_date}"        
 
         file_name = f"{folder_name}/LoadCellLog_{date_time}.csv"
