@@ -139,7 +139,7 @@ data_sample = data_table['Normal'][exp_no]
 
 plt.figure(figsize=(20,5))
 plt.plot(data_sample,'.-')
-# %%
+
 diff_sample = np.diff(data_sample)
 plt.figure(figsize=(20,5))
 plt.plot(diff_sample,'o-')
@@ -211,6 +211,8 @@ for exp_no in [6, 4, 8, 2]:
         stacked=True,
         color=clr_list[i])
     plt.plot(np.linspace(1,47,24),n,'o-',color=clr_list[i])
+    mean_interval[i] = np.mean(0.25*np.diff(ipt))
+    std_interval[i] = np.std(0.25*np.diff(ipt))
     i = i + 1
 
 plt.legend()
@@ -236,6 +238,7 @@ for exp_no in [5, 3, 7, 1]:
     diff_sample = np.diff(data_sample)
     ipt = np.where(np.abs(diff_sample) > 5)[0]
     energy_release = diff_sample[ipt]
+    n, bins, patches = plt.hist(energy_release)
 
     # n, bins, patches = plt.hist(0.25*np.diff(ipt),
     #     bins=range(0,50,2),
