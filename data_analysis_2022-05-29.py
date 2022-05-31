@@ -37,7 +37,7 @@ for t in time_list:
 # %%
 data_path[0]
 # %%
-exp_no = 0
+exp_no = 2
 
 # data_table['Direction'][exp_no]
 test = np.loadtxt(data_path[exp_no],delimiter=',')
@@ -133,14 +133,179 @@ for exp_no in range(len(data_table)):
 # %%
 print(data_table)
 # %%
-exp_no = 3
+exp_no = 2
 print(data_table.iloc[exp_no])
 data_sample = data_table['Normal'][exp_no]
 
-plt.figure(figsize=(40,5))
+plt.figure(figsize=(20,5))
 plt.plot(data_sample,'.-')
-# %% Slip event
+# %%
+diff_sample = np.diff(data_sample)
+plt.figure(figsize=(20,5))
+plt.plot(diff_sample,'o-')
 
+tt = np.arange(len(data_sample))*0.25
+
+ipt = np.where(np.abs(diff_sample) > 5)[0]
+plt.figure(figsize=(20,5))
+plt.plot(tt,data_sample,'.-')
+plt.plot(0.25*ipt,data_sample[ipt],'o')
+plt.xlabel('Time (sec)')
+plt.ylabel('Friction (gf)')
+
+# %%
+plt.hist(np.diff(ipt))
+
+# %%
+# Set a clean upper y-axis limit.
+clr_list = ['#e41a1c','#377eb8','#4daf4a','#984ea3']
+
+mean_interval = np.zeros((4,1))
+std_interval = np.zeros((4,1))
+i = 0
+for exp_no in [5, 3, 7, 1]:
+    data_sample = data_table['Friction'][exp_no]
+    diff_sample = np.diff(data_sample)
+    ipt = np.where(np.abs(diff_sample) > 5)[0]
+    n, bins, patches = plt.hist(0.25*np.diff(ipt),
+        bins=range(0,50,2),
+        label=data_table['Diameter'][exp_no],
+        alpha=0.5,
+        density=True,
+        stacked=True,
+        color=clr_list[i])
+    plt.plot(np.linspace(1,47,24),n,'o-',color=clr_list[i])
+    mean_interval[i] = np.mean(0.25*np.diff(ipt))
+    std_interval[i] = np.std(0.25*np.diff(ipt))
+
+    i = i + 1
+
+plt.legend()
+plt.xlabel('Interval (sec)')
+plt.ylabel('Occurrence')
+# data_folder_path = Path('/Users/yeonsu/Dropbox (Harvard University)/Stick-slip/Experiment-data')
+
+# fig_label = '%s_%s.png'%(data_table['Diameter'][exp_no],data_table['Direction'][exp_no])
+plt.savefig(data_folder_path/exp_date/'Histogram_Push.png',dpi=300)
+# %%
+plt.plot([30,45,60,90],mean_interval,'o-')
+plt.xlabel('Shell diameter (mm)')
+plt.ylabel('Average interval between slips (sec)')
+plt.savefig(data_folder_path/exp_date/'MeanInt_Push.png',dpi=300)
+# %%
+plt.plot([30,45,60,90],std_interval,'o-')
+plt.xlabel('Shell diameter (mm)')
+plt.ylabel('STD of interval between slips (sec)')
+plt.savefig(data_folder_path/exp_date/'STDInt_Push.png',dpi=300)
+# %%
+i = 0
+for exp_no in [6, 4, 8, 2]:
+    data_sample = data_table['Friction'][exp_no]
+    diff_sample = np.diff(data_sample)
+    ipt = np.where(np.abs(diff_sample) > 10)[0]
+    n, bins, patches = plt.hist(0.25*np.diff(ipt),
+        bins=range(0,50,2),
+        label=data_table['Diameter'][exp_no],
+        alpha=0.5,
+        density=True,
+        stacked=True,
+        color=clr_list[i])
+    plt.plot(np.linspace(1,47,24),n,'o-',color=clr_list[i])
+    i = i + 1
+
+plt.legend()
+plt.xlabel('Interval (sec)')
+plt.ylabel('Occurrence')
+plt.savefig(data_folder_path/exp_date/'Histogram_Pull.png',dpi=300)
+# %%
+plt.plot([30,45,60,90],mean_interval,'o-')
+plt.xlabel('Shell diameter (mm)')
+plt.ylabel('Average interval between slips (sec)')
+plt.savefig(data_folder_path/exp_date/'MeanInt_Push.png',dpi=300)
+# %%
+plt.plot([30,45,60,90],std_interval,'o-')
+plt.xlabel('Shell diameter (mm)')
+plt.ylabel('STD of interval between slips (sec)')
+plt.savefig(data_folder_path/exp_date/'STDInt_Push.png',dpi=300)
+# %% Energy release
+clr_list = ['#e41a1c','#377eb8','#4daf4a','#984ea3']
+
+i = 0
+for exp_no in [5, 3, 7, 1]:
+    data_sample = data_table['Friction'][exp_no]
+    diff_sample = np.diff(data_sample)
+    ipt = np.where(np.abs(diff_sample) > 5)[0]
+    energy_release = diff_sample[ipt]
+
+    # n, bins, patches = plt.hist(0.25*np.diff(ipt),
+    #     bins=range(0,50,2),
+    #     label=data_table['Diameter'][exp_no],
+    #     alpha=0.5,
+    #     density=True,
+    #     stacked=True,
+    #     color=clr_list[i])
+    # plt.plot(np.linspace(1,47,24),n,'o-',color=clr_list[i])
+
+    i = i + 1
+
+plt.legend()
+plt.xlabel('Interval (sec)')
+plt.ylabel('Occurrence')
+# data_folder_path = Path('/Users/yeonsu/Dropbox (Harvard University)/Stick-slip/Experiment-data')
+
+# fig_label = '%s_%s.png'%(data_table['Diameter'][exp_no],data_table['Direction'][exp_no])
+plt.savefig(data_folder_path/exp_date/'Histogram_Push.png',dpi=300)
+
+# %%
+data_table.iloc[3]
+
+
+# %%
+# import matlab
+import matlab.engine
+eng = matlab.engine.start_matlab()
+# %%
+b = matlab.double(data_sample.tolist())
+# ipt = eng.findchangepts()
+
+# %%
+ipt = eng.findchangepts(b,'MaxNumChanges',10)
+eng.size(ipt)
+
+ipt_py = np.array(ipt)[0].astype('int') + 1
+# %%
+plt.figure(figsize=(20,5))
+plt.plot(data_sample,'.-')
+plt.plot(ipt_py,data_sample[ipt_py],'o')
+
+
+
+# %% Slip event
+import ruptures as rpt
+
+algo = rpt.Dynp(model="l2").fit(data_sample)
+result = algo.predict(n_bkps=100)
+
+print(result)
+# %%
+ipt_rupture = np.array(result)-1
+# %%
+plt.figure(figsize=(20,5))
+plt.plot(data_sample)
+plt.plot(ipt_rupture,data_sample[ipt_rupture],'o')
+
+# %%
+# examples
+# generate signal
+n_samples, dim, sigma = 1000, 3, 4
+n_bkps = 100  # number of breakpoints
+signal, bkps = rpt.pw_constant(n_samples, dim, n_bkps, noise_std=sigma)
+# detection
+algo = rpt.Pelt(model="rbf").fit(signal)
+result = algo.predict(pen=10)
+# display
+rpt.display(signal, bkps, result)
+plt.show()
 
 
 # %%
